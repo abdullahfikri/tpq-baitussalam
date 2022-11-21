@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+input:focus ~ .input-text,
+.input-text-after-filled {
+    @apply text-blue-500 bg-white transform -translate-y-7 -translate-x-5 scale-[.70];
+}
+input:focus ~ .input-icon,
+.input-icon-after-filled {
+    @apply text-blue-500;
+}
