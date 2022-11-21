@@ -1,5 +1,7 @@
+import PageLogin from './components/PageAuth/PageLogin';
+
 function App() {
-    return <div className="App">Test</div>;
+    return <PageLogin />;
 }
 
 export default App;
