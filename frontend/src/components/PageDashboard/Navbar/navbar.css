@@ -1,0 +1,5 @@
+.navbar-input:focus + .navbar-input__icon {
+    color: #2eabf1;
+    transition: all;
+    transition-duration: 300ms;
+}

@@ -1,15 +1,39 @@
-import { Formik, Form } from 'formik';
+import { useDispatch } from 'react-redux';
+import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import InputAuth from './InputAuth';
 
 import { FaUser } from 'react-icons/fa';
 import { RiLockPasswordFill } from 'react-icons/ri';
 
+import { login } from '../../reducers/user';
+import Cookies from 'js-cookie';
+import * as api from '../../api';
+
 export default function FormAuth() {
+    const dispatch = useDispatch();
+
     const validate = Yup.object({
         username: Yup.string().required('Username tidak boleh kosong'),
         password: Yup.string().required('Password tidak boleh kosong'),
     });
+
+    const handleSubmit = async (value, formik) => {
+        // console.log(value);
+
+        try {
+            const { data } = await api.signin(value);
+            console.log(data);
+            dispatch(login(data));
+            Cookies.set('user', JSON.stringify(data));
+        } catch (error) {
+            formik.setFieldError('username', error.response.data.message);
+            formik.setFieldError('password', error.response.data.message);
+            // formik.setFieldValue('password', '');
+
+            // console.log(error.response.status);
+        }
+    };
 
     return (
         <Formik
@@ -18,13 +42,7 @@ export default function FormAuth() {
                 password: '',
             }}
             validationSchema={validate}
-            onSubmit={(value, formik) => {
-                // formik.setTouched({ username: true, password: true });
-                formik.setErrors({
-                    username: 'username dan password salah',
-                    password: 'username dan password salah',
-                });
-            }}
+            onSubmit={handleSubmit}
         >
             {(formik) => {
                 return (

@@ -24,7 +24,11 @@ export default function InputAuth({ type, name, placeholder, icon, label }) {
                         meta.touched && !meta.error
                             ? '!border-blue-500 text-dark-blue'
                             : ''
-                    }  ${meta.touched && meta.error && 'border-red-error'}`}
+                    }  ${
+                        meta.touched &&
+                        meta.error &&
+                        'border-red-error text-red-error'
+                    }`}
                     {...field}
                     {...props}
                     autoComplete="off"
