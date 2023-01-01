@@ -6,6 +6,7 @@ const initialState = {
     numberOfPages: 0,
     isLoading: false,
     startIndex: 0,
+    sppDetail: {},
 };
 
 const sppSlice = createSlice({
@@ -29,8 +30,20 @@ const sppSlice = createSlice({
             }
             state.spp.unshift(action.payload);
         },
+        updateSPP: (state, action) => {
+            const index = state.spp.findIndex(
+                (spp) => spp.uuid === action.payload.uuid
+            );
+            state.spp[index] = action.payload;
+        },
         getSPPSum: (state, action) => {
             state.sum = action.payload;
+        },
+        getSPPByUUID: (state, action) => {
+            state.sppDetail = action.payload;
+        },
+        clearSPPDetail: (state) => {
+            state.sppDetail = {};
         },
     },
 });
@@ -40,6 +53,9 @@ export const {
     endLoading,
     fetchSppPerPage,
     insertSingleSPP,
+    updateSPP,
     getSPPSum,
+    getSPPByUUID,
+    clearSPPDetail,
 } = sppSlice.actions;
 export default sppSlice.reducer;

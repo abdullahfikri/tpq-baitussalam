@@ -31,14 +31,14 @@ export default function Logs() {
             <h1 className="font-medium text-xl text-gray-800 mb-3">LIST SPP</h1>
             <div>
                 <div>
-                    <div className="mb-3">
+                    {/* <div className="mb-3">
                         <button
                             onClick={() => {}}
                             className="flex gap-2 items-center rounded-md p-2 bg-primary text-white font-medium"
                         >
                             <AiOutlinePlus /> <span>Tambah SPP SISWA</span>
                         </button>
-                    </div>
+                    </div> */}
                     <div>
                         <table className="table-auto w-full">
                             <thead>

@@ -4,6 +4,7 @@ const Kelas = require('../model/kelas.js');
 
 class Siswa {
     constructor({
+        uuid_siswa,
         nama_lengkap,
         nik_anak,
         no_kk,
@@ -58,6 +59,7 @@ class Siswa {
 
         uuid_user,
     }) {
+        this.uuid_siswa = uuid_siswa;
         this.nama_lengkap = nama_lengkap;
         this.nik_anak = nik_anak;
         this.no_kk = no_kk;
@@ -216,6 +218,100 @@ class Siswa {
                 return data;
             });
         return siswa;
+    }
+
+    async updateSiswa(res) {
+        try {
+            const existingSiswaNik = await siswaDb.findOne({
+                where: {
+                    nik_anak: this.nik_anak,
+                },
+            });
+
+            if (!existingSiswaNik) {
+                return res.status(400).json({
+                    status: 'failed',
+                    message: 'Nik siswa tidak terdaftar',
+                });
+            }
+
+            const siswa = await siswaDb.update(
+                {
+                    nama_lengkap: this.nama_lengkap,
+                    nik_anak: this.nik_anak,
+                    no_kk: this.no_kk,
+                    no_akta: this.no_akta,
+                    jenis_kelamin: this.jenis_kelamin,
+                    tempat_lahir: this.tempat_lahir,
+                    tanggal_lahir: this.tanggal_lahir,
+                    alamat_rumah: this.alamat_rumah,
+                    kelurahan: this.kelurahan,
+                    kecamatan: this.kecamatan,
+                    agama: this.agama,
+                    anak_ke: this.anak_ke,
+                    jumlah_saudara: this.jumlah_saudara,
+                    keterangan_yatim: this.keterangan_yatim,
+                    golongan_darah: this.golongan_darah,
+                    nama_ayah: this.nama_ayah,
+                    nik_ayah: this.nik_ayah,
+                    tempat_lahir_ayah: this.tempat_lahir_ayah,
+                    tanggal_lahir_ayah: this.tanggal_lahir_ayah,
+                    pendidikan_ayah: this.pendidikan_ayah,
+                    pekerjaan_ayah: this.pekerjaan_ayah,
+                    alamat_ayah: this.alamat_ayah,
+                    nomor_telp_ayah: this.nomor_telp_ayah,
+                    penghasilan_ayah: this.penghasilan_ayah,
+                    nama_ibu: this.nama_ibu,
+                    nik_ibu: this.nik_ibu,
+                    tempat_lahir_ibu: this.tempat_lahir_ibu,
+                    tanggal_lahir_ibu: this.tanggal_lahir_ibu,
+                    pendidikan_ibu: this.pendidikan_ibu,
+                    pekerjaan_ibu: this.pekerjaan_ibu,
+                    alamat_ibu: this.alamat_ibu,
+                    nomor_telp_ibu: this.nomor_telp_ibu,
+                    penghasilan_ibu: this.penghasilan_ibu,
+                    nama_wali: this.nama_wali,
+                    nik_wali: this.nik_wali,
+                    tempat_lahir_wali: this.tempat_lahir_wali,
+                    tanggal_lahir_wali: this.tanggal_lahir_wali,
+                    pendidikan_wali: this.pendidikan_wali,
+                    pekerjaan_wali: this.pekerjaan_wali,
+                    alamat_wali: this.alamat_wali,
+                    nomor_telp_wali: this.nomor_telp_wali,
+                    penghasilan_wali: this.penghasilan_wali,
+                    bulan_spp_terakhir_dibayar: this.bulan_spp_terakhir_dibayar,
+                    status: this.status,
+                    tanggal_masuk: this.tanggal_masuk,
+                    uuid_kelas: this.uuid_kelas,
+                    photo: this.photo,
+                },
+                {
+                    where: {
+                        uuid_siswa: this.uuid_siswa,
+                    },
+                }
+            );
+
+            const logs = new Logs(
+                this.uuid_user,
+                `Update siswa dengan nik ${this.nik_anak} dan nama ${this.nama_lengkap}`,
+                new Date().toISOString()
+            );
+
+            const result = await logs.create();
+
+            return res.status(200).json({
+                message: 'Siswa updated',
+                siswa: siswa,
+                logs: result,
+            });
+        } catch (error) {
+            console.log(error);
+            return res
+
+                .status(500)
+                .json({ message: 'Internal server error', error });
+        }
     }
 
     static async getSiswaByNik(nik, res) {

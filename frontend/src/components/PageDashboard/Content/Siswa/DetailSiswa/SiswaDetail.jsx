@@ -6,6 +6,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import SiswaItem from './SiswaItem';
 
+import { Image } from 'primereact/image';
+
+import priaImage from '../../../../../assets/user.jpg';
+import perempuanImage from '../../../../../assets/perempuan.png';
+
 // const useQuery = () => {
 //     return new URLSearchParams(useLocation().search);
 // };
@@ -73,10 +78,20 @@ export default function SiswaDetail() {
             <div className="mt-5">
                 <h4 className="px-4 font-bold text-xl">Data Siswa</h4>
                 <div className="px-4 flex gap-10 ">
-                    <img
+                    <Image
+                        src={`${
+                            !siswa?.photo && siswa?.jenis_kelamin
+                                ? priaImage
+                                : perempuanImage
+                        }`}
+                        alt="Image"
+                        width="250"
+                        preview
+                    />
+                    {/* <img
                         src={`${siswa?.photo}`}
                         className="rounded-full overflow-hidden w-52 h-52 "
-                    />
+                    /> */}
                     <div className="flex-1">
                         <SiswaItem
                             name="Tanggal Masuk"
@@ -87,6 +102,23 @@ export default function SiswaDetail() {
                             name="Kelas"
                             value={siswa?.kela?.nama_kelas}
                         />
+
+                        <div className={`flex gap-2 mt-2  px-4 items-center `}>
+                            <div className="w-[200px]  mr-1 flex justify-between">
+                                <p className="font-medium">Status</p>
+                                <p className="">:</p>
+                            </div>
+                            <p
+                                className={` text-white py-2 px-3  rounded-lg 
+                                ${
+                                    siswa?.status === 'active'
+                                        ? 'bg-green-400'
+                                        : 'bg-red-error'
+                                }`}
+                            >
+                                {siswa?.status}
+                            </p>
+                        </div>
                     </div>
                 </div>
                 <div className="mt-4">

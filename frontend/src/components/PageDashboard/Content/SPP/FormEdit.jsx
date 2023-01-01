@@ -2,12 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllSiswa } from '../../../../actions/siswa';
-import { insertSPP } from '../../../../actions/spp';
+import { updateSPPAction } from '../../../../actions/spp';
 import { Formik, Form } from 'formik';
 import ValidateSchema from './ValidateSchema';
+import { clearSPPDetail } from '../../../../reducers/spp';
 
-export default function FormEdit({ setIsTambahSPP, id_spp }) {
-    const [nama, setNama] = useState('');
+export default function FormEdit({
+    setIsTambahSPP,
+    id_spp,
+    setIsEdit,
+    sppDetail,
+}) {
+    // console.log(sppDetail?.siswa?.bulan_spp_terakhir_dibayar);
+    const [nama, setNama] = useState(sppDetail?.siswa?.nama_lengkap || '');
     const [isLoading, setIsLoading] = useState(false);
     const [isSearch, setIsSearch] = useState(false);
     const [isSellect, setIsSellect] = useState(false);
@@ -15,13 +22,21 @@ export default function FormEdit({ setIsTambahSPP, id_spp }) {
 
     const [buttonDisable, setButtonDisable] = useState(true);
 
-    const [terakhirDibayar, setTerakhirDibayar] = useState('');
+    const [terakhirDibayar, setTerakhirDibayar] = useState(
+        sppDetail?.siswa?.bulan_spp_terakhir_dibayar || ''
+    );
 
-    const [total, setTotal] = useState(0);
+    const [total, setTotal] = useState(sppDetail?.jumlah_bayar || 0);
 
-    const [jumlahBulanYangDibayar, setJumlahBulanYangDibayar] = useState(0);
+    const [jumlahBulanYangDibayar, setJumlahBulanYangDibayar] = useState(
+        sppDetail?.jumlah_bulan_dibayar || 0
+    );
+    const [jumlahBulanYangDibayarBefore, setJumlahBulanYangDibayarBefore] =
+        useState(sppDetail?.jumlah_bulan_dibayar || 0);
 
-    const [uuid_siswa_filter, setUuid_siswa_filter] = useState('');
+    const [uuid_siswa_filter, setUuid_siswa_filter] = useState(
+        sppDetail?.uuid_siswa || ''
+    );
 
     const { siswa } = useSelector((state) => state.siswa);
     const dispatch = useDispatch();
@@ -32,10 +47,6 @@ export default function FormEdit({ setIsTambahSPP, id_spp }) {
 
     useEffect(() => {
         const find = setTimeout(() => {
-            // let siswaCopy = [...siswa];
-            // if (siswa.length > 5) {
-            //     siswaCopy = siswaCopy.slice(0, 5);
-            // }
             setIsSearch(true);
             const hasil = siswa.filter((item) => {
                 return item.nama_lengkap
@@ -48,8 +59,6 @@ export default function FormEdit({ setIsTambahSPP, id_spp }) {
             } else {
                 setFilterSiswa(hasil);
             }
-
-            console.log(filterSiswa);
         }, 600);
 
         return () => {
@@ -162,29 +171,59 @@ export default function FormEdit({ setIsTambahSPP, id_spp }) {
     };
 
     const submitHandler = async (values, { setSubmitting }) => {
-        const date = new Date(filterSiswa[0]?.bulan_spp_terakhir_dibayar);
+        // jumlahBulanYangDibayarBefore;
+        // console.log(filterSiswa[0]?.bulan_spp_terakhir_dibayar);
+        let initDate = new Date(terakhirDibayar);
+        initDate = new Date(initDate.setDate(initDate.getDate() + 1));
+        const date = new Date(
+            initDate.setMonth(
+                initDate.getMonth() - jumlahBulanYangDibayarBefore
+            )
+        );
+
+        console.log(
+            new Date(
+                date.setMonth(date.getMonth() + jumlahBulanYangDibayar)
+            ).toISOString()
+        );
 
         const bulan_spp_terakhir_dibayar = new Date(
             date.setMonth(date.getMonth() + jumlahBulanYangDibayar)
         )
             .toISOString()
             .slice(0, 10);
+        // console.log(bulan_spp_terakhir_dibayar);
+
         const tanggal_bayar = new Date().toISOString().slice(0, 10);
         const jumlah_bulan_dibayar = jumlahBulanYangDibayar;
         const jumlah_bayar = total;
         const uuid_siswa = uuid_siswa_filter;
 
-        dispatch(
-            insertSPP({
-                bulan_spp_terakhir_dibayar,
-                tanggal_bayar,
-                jumlah_bulan_dibayar,
-                jumlah_bayar,
-                uuid_siswa,
-            })
-        );
+        // console.log(jumlah_bulan_dibayar);
 
-        setIsTambahSPP(false);
+        // const response = await dispatch(
+        //     updateSPPAction({
+        //         bulan_spp_terakhir_dibayar,
+        //         tanggal_bayar,
+        //         jumlah_bulan_dibayar,
+        //         jumlah_bayar,
+        //         uuid_siswa: sppDetail?.uuid_siswa,
+        //         uuid_spp: sppDetail?.uuid_spp,
+        //     })
+        // );
+
+        // console.log(response);
+        // dispatch(
+        //     insertSPP({
+        //         bulan_spp_terakhir_dibayar,
+        //         tanggal_bayar,
+        //         jumlah_bulan_dibayar,
+        //         jumlah_bayar,
+        //         uuid_siswa,
+        //     })
+        // );
+
+        // setIsTambahSPP(false);
     };
 
     return (
@@ -194,7 +233,8 @@ export default function FormEdit({ setIsTambahSPP, id_spp }) {
         >
             <div
                 onClick={() => {
-                    setIsTambahSPP(false);
+                    setIsEdit(false);
+                    dispatch(clearSPPDetail());
                 }}
                 className="absolute bg-red-error h-[40px] w-[40px] top-0 right-0 cursor-pointer"
             >
@@ -202,7 +242,7 @@ export default function FormEdit({ setIsTambahSPP, id_spp }) {
             </div>
             <div className="flex flex-col mb-10 h-full overflow-y-auto p-10">
                 <h3 className="font-medium text-xl mb-10 text-center">
-                    Form Tambah SPP
+                    Form EDIT SPP
                 </h3>
                 <div>
                     <h4 className="text-lg font-bold">Data SPP</h4>
@@ -219,9 +259,10 @@ export default function FormEdit({ setIsTambahSPP, id_spp }) {
                                 <Form>
                                     <div className="relative">
                                         <input
+                                            disabled
                                             type="text"
                                             placeholder="Nama "
-                                            className={`p-3 outline-none border-2 border-primary rounded-md w-full ${
+                                            className={`cursor-not-allowed p-3 outline-none border-2 border-primary rounded-md w-full ${
                                                 isSellect &&
                                                 'bg-gray-200 text-primary'
                                             }`}
@@ -321,6 +362,7 @@ export default function FormEdit({ setIsTambahSPP, id_spp }) {
                                             placeholder="Jumlah Bulan Dibayar"
                                             className="p-3 outline-none border-2 border-primary rounded-md w-full mt-3"
                                             onChange={jumlahBulanDibayarHandler}
+                                            value={jumlahBulanYangDibayar}
                                             maxLength="2"
                                         />
                                     </div>
@@ -329,8 +371,8 @@ export default function FormEdit({ setIsTambahSPP, id_spp }) {
                                         <input
                                             type="tel"
                                             name="jumlah_bayar"
-                                            className={`cursor-not-allowed p-3 outline-none border-2 border-primary rounded-md w-full mt-3 ${
-                                                !total && 'text-gray-400'
+                                            className={`cursor-not-allowed text-gray-600 p-3 bg-gray-300 outline-none border-2 border-primary rounded-md w-full mt-3 ${
+                                                !total && ''
                                             }`}
                                             value={`Total : ${total}`}
                                             readOnly

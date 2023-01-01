@@ -6,12 +6,25 @@ import { insertSPP } from '../../../../actions/spp';
 import { Formik, Form } from 'formik';
 import ValidateSchema from './ValidateSchema';
 
+import OverlayMessage from './OverlayMessage';
+import Konfirmasi from './KonfirmasiSPP';
+import { clearSPPDetail } from '../../../../reducers/spp';
+
 export default function FormTambahSPP({ setIsTambahSPP }) {
+    // const [bulan_spp_terakhir_dibayar, setBulan_spp_terakhir_dibayar] =
+    //     useState(null);
+
     const [nama, setNama] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isSearch, setIsSearch] = useState(false);
     const [isSellect, setIsSellect] = useState(false);
     const [filterSiswa, setFilterSiswa] = useState([]);
+
+    const [isKonfirmasi, setIsKonfirmasi] = useState(false);
+
+    const [message, setMessage] = useState('');
+    const [overlayMessage, setOverlayMessage] = useState(false);
+    const [status, setStatus] = useState('');
 
     const [buttonDisable, setButtonDisable] = useState(true);
 
@@ -24,7 +37,7 @@ export default function FormTambahSPP({ setIsTambahSPP }) {
     const [uuid_siswa_filter, setUuid_siswa_filter] = useState('');
 
     const { siswa } = useSelector((state) => state.siswa);
-    const { uuid_user } = useSelector((state) => state.user);
+    const { uuid_user, fullName } = useSelector((state) => state.user);
 
     const dispatch = useDispatch();
 
@@ -112,7 +125,6 @@ export default function FormTambahSPP({ setIsTambahSPP }) {
     const menuHandler = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        // setUuid_siswa_filter(e.target.children[0].innerText);
 
         if (e.target.id === 'nik') {
             setNama(e.target.previousSibling.innerText);
@@ -163,31 +175,61 @@ export default function FormTambahSPP({ setIsTambahSPP }) {
         setJumlahBulanYangDibayar(value);
     };
 
+    const konfirmasi = (pilihan) => {
+        if (pilihan) {
+            try {
+                // console.log(test);
+                const date = new Date(
+                    filterSiswa[0]?.bulan_spp_terakhir_dibayar
+                );
+
+                console.log();
+                // setBulan_spp_terakhir_dibayar(
+                //     new Date(
+                //         date.setMonth(date.getMonth() + jumlahBulanYangDibayar)
+                //     )
+                // // )
+                //     .toISOString()
+                //     .slice(0, 10);
+                const bulan_spp_terakhir_dibayar = new Date(
+                    date.setMonth(date.getMonth() + jumlahBulanYangDibayar)
+                )
+                    .toISOString()
+                    .slice(0, 10);
+                console.log(bulan_spp_terakhir_dibayar);
+                const tanggal_bayar = new Date().toISOString().slice(0, 10);
+                const jumlah_bulan_dibayar = jumlahBulanYangDibayar;
+                const jumlah_bayar = total;
+                const uuid_siswa = uuid_siswa_filter;
+
+                dispatch(
+                    insertSPP({
+                        bulan_spp_terakhir_dibayar,
+                        tanggal_bayar,
+                        jumlah_bulan_dibayar,
+                        jumlah_bayar,
+                        uuid_siswa,
+                        uuid_user,
+                    })
+                );
+                dispatch(clearSPPDetail());
+                setStatus('Berhasil');
+                setMessage('Berhasil menambahkan data SPP');
+                setOverlayMessage(true);
+            } catch (error) {
+                console.log(error);
+                setStatus('Gagal');
+                setMessage('Gagal menambahkan data SPP');
+                setOverlayMessage(true);
+                dispatch(clearSPPDetail());
+            }
+        } else {
+            setIsKonfirmasi(false);
+        }
+    };
+
     const submitHandler = async (values, { setSubmitting }) => {
-        const date = new Date(filterSiswa[0]?.bulan_spp_terakhir_dibayar);
-
-        const bulan_spp_terakhir_dibayar = new Date(
-            date.setMonth(date.getMonth() + jumlahBulanYangDibayar)
-        )
-            .toISOString()
-            .slice(0, 10);
-        const tanggal_bayar = new Date().toISOString().slice(0, 10);
-        const jumlah_bulan_dibayar = jumlahBulanYangDibayar;
-        const jumlah_bayar = total;
-        const uuid_siswa = uuid_siswa_filter;
-
-        dispatch(
-            insertSPP({
-                bulan_spp_terakhir_dibayar,
-                tanggal_bayar,
-                jumlah_bulan_dibayar,
-                jumlah_bayar,
-                uuid_siswa,
-                uuid_user,
-            })
-        );
-
-        setIsTambahSPP(false);
+        setIsKonfirmasi(true);
     };
 
     return (
@@ -367,6 +409,34 @@ export default function FormTambahSPP({ setIsTambahSPP }) {
                     </div>
                 </div>
             </div>
+            {overlayMessage && (
+                <OverlayMessage
+                    setIsTambahSPP={setIsTambahSPP}
+                    message={message}
+                    status={status}
+                    setOverlayMessage={setOverlayMessage}
+                    data={{
+                        nama,
+                        jumlahBulanYangDibayar,
+                        total,
+
+                        fullName,
+                    }}
+                />
+            )}
+            {isKonfirmasi && (
+                <Konfirmasi
+                    konfirmasi={konfirmasi}
+                    setKonfirmasi={setIsKonfirmasi}
+                    message="Apakah anda yakin ingin menyimpan pembayaran ini?"
+                    data={{
+                        nama,
+                        jumlahBulanYangDibayar,
+                        total,
+                        terakhirDibayar,
+                    }}
+                />
+            )}
         </div>
     );
 }

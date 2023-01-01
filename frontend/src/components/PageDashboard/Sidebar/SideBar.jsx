@@ -60,7 +60,7 @@ export default function SideBar({ type }) {
                             />
                         </li>
                     )} */}
-                    {type === '0' && (
+                    {type === '1' && (
                         <li className="mt-4">
                             <Menu
                                 to={'logs'}
@@ -72,20 +72,30 @@ export default function SideBar({ type }) {
                         </li>
                     )}
 
-                    {type === '0' && (
-                        <li
-                            className=" mt-auto text-red-error"
-                            onClick={() => {
-                                Cookies.remove('user');
-                                dispatch(logout(null));
-                            }}
-                        >
+                    {type === '1' && (
+                        <li className="mt-4">
                             <Menu
-                                text="Logout"
-                                icon={<TbLogout className="text-2xl" />}
+                                to={'tu'}
+                                text="TU"
+                                icon={
+                                    <MdOutlineLibraryBooks className="text-2xl" />
+                                }
                             />
                         </li>
                     )}
+
+                    <li
+                        className=" mt-auto text-red-error"
+                        onClick={() => {
+                            Cookies.remove('user');
+                            dispatch(logout(null));
+                        }}
+                    >
+                        <Menu
+                            text="Logout"
+                            icon={<TbLogout className="text-2xl" />}
+                        />
+                    </li>
                 </ul>
             </div>
             <div className="w-full h-1 bg-primary"></div>

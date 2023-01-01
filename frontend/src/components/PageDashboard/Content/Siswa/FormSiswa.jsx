@@ -9,7 +9,11 @@ import TextAreaSiswa from './TextAreaSiswa';
 import FormDataSiswa from './FormDataSiswa';
 import FormDataOrtu from './FormDataOrtu';
 
-export default function FormSiswa({ setIsTambahSiswa }) {
+export default function FormSiswa({
+    setIsTambahSiswa,
+    setStatus,
+    setOverlayMessage,
+}) {
     const [isTambahDataSiswa, setIsTambahDataSiswa] = useState(true);
     const [dataSiswa, setDataSiswa] = useState({});
 
@@ -35,9 +39,12 @@ export default function FormSiswa({ setIsTambahSiswa }) {
                     />
                 ) : (
                     <FormDataOrtu
+                        setIsTambahSiswa={setIsTambahSiswa}
                         setIsTambahDataSiswa={setIsTambahDataSiswa}
                         setDataSiswa={setDataSiswa}
                         dataSiswa={dataSiswa}
+                        setOverlayMessage={setOverlayMessage}
+                        setStatus={setStatus}
                     />
                 )}
             </div>

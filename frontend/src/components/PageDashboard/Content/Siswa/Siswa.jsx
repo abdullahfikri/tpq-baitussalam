@@ -5,24 +5,35 @@ import { RiDeleteBin6Line } from 'react-icons/ri';
 import FormSiswa from './FormSiswa';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 
-import { getSiswa } from '../../../../actions/siswa';
+import { getSiswa, getSiswaByNIK } from '../../../../actions/siswa';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Pagination from '@mui/material/Pagination';
 import PaginationItem from '@mui/material/PaginationItem';
 
 import Loading from '../../../helpers/Loading';
-
+import OverlayMessage from '../../../../utils/OverlayMessage';
 const useQuery = () => {
     return new URLSearchParams(useLocation().search);
 };
 
 export default function Siswa() {
-    const { currentPage, siswa, isLoading, numberOfPage, startIndex } =
-        useSelector((state) => state.siswa);
+    const {
+        currentPage,
+        siswa,
+        isLoading,
+        numberOfPage,
+        startIndex,
+        siswaDetail,
+    } = useSelector((state) => state.siswa);
+
+    const user = useSelector((state) => state.user);
+
+    const [status, setStatus] = useState('');
+    const [overlayMessage, setOverlayMessage] = useState('');
 
     const [siswaData, setSiswaData] = useState(true);
-    const [isTambahSiswa, setIsTambahSiswa] = useState(!true);
+    const [isTambahSiswa, setIsTambahSiswa] = useState(false);
     const dispatch = useDispatch();
     const history = useNavigate();
     const query = useQuery();
@@ -32,25 +43,26 @@ export default function Siswa() {
         if (page) {
             dispatch(getSiswa(page));
         }
+        // console.log(siswaDetail);
     }, [dispatch, page]);
 
-    console.log(currentPage, siswa, isLoading, numberOfPage);
     return (
         <div className="w-full bg-white border-[3px] border-primary p-10 rounded-lg">
             <h3 className="font-medium text-xl">Data Siswa</h3>
-            <div className="mt-3 flex justify-between items-center">
-                <div>
-                    <button
-                        className="flex items-center gap-1 bg-[#7c7c7c] px-3 py-2 rounded-lg text-white"
-                        onClick={() => {
-                            setIsTambahSiswa(true);
-                        }}
-                    >
-                        <AiOutlinePlus /> Tambah Siswa
-                    </button>
+            {user?.type === '0' && (
+                <div className="mt-3 flex justify-between items-center">
+                    <div>
+                        <button
+                            className="flex items-center gap-1 bg-[#7c7c7c] px-3 py-2 rounded-lg text-white"
+                            onClick={() => {
+                                setIsTambahSiswa(true);
+                            }}
+                        >
+                            <AiOutlinePlus /> Tambah Siswa
+                        </button>
+                    </div>
                 </div>
-            </div>
-
+            )}
             {siswaData && (
                 <div className="mt-4 relative">
                     {isLoading && <Loading />}
@@ -59,6 +71,9 @@ export default function Siswa() {
                             <tr className="border-[2px] border-primary  text-gray-600">
                                 <th className="text-center py-3 ">No.</th>
                                 <th className="text-left">Nama</th>
+                                <th className="text-left">
+                                    Spp Terakhir dibayar pada
+                                </th>
                                 <th className="text-left">Kelas</th>
                                 <th className="text-left">Status</th>
                                 <th className="text-left">Aksi</th>
@@ -81,33 +96,37 @@ export default function Siswa() {
                                                 {item.nama_lengkap}
                                             </Link>
                                         </td>
+                                        <td>
+                                            {item?.bulan_spp_terakhir_dibayar}
+                                        </td>
                                         <td className="">
                                             {item?.kela?.nama_kelas}
                                         </td>
                                         <td>
                                             <p
                                                 className={`${
-                                                    item.status === 'active' &&
-                                                    'bg-green-600 text-white'
+                                                    item.status === 'active'
+                                                        ? 'bg-green-600 text-white'
+                                                        : 'bg-red-error'
                                                 } py-1 px-3 w-fit rounded-full`}
                                             >
                                                 {item.status}
                                             </p>
                                         </td>
                                         <td className="">
-                                            <button
-                                                className="bg-[#7c7c7c]  py-2 rounded-lg text-white  w-[80px] mr-2 "
-                                                onClick={() => {
-                                                    history(
-                                                        `/dashboard/siswa/edit/${item.nik_anak}`
-                                                    );
-                                                }}
-                                            >
-                                                <TfiWrite className="m-auto text-xl" />
-                                            </button>
-                                            <button className="bg-red-error  py-2 rounded-lg text-white w-[80px]">
-                                                <RiDeleteBin6Line className="m-auto text-xl" />
-                                            </button>
+                                            {user?.type === '0' && (
+                                                <button
+                                                    className="bg-[#7c7c7c]  py-2 rounded-lg text-white  w-[80px] mr-2 "
+                                                    onClick={() => {
+                                                        history(
+                                                            `/dashboard/siswa/edit/${item.nik_anak}`
+                                                        );
+                                                    }}
+                                                    value={item?.nik_anak}
+                                                >
+                                                    Edit
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 );
@@ -138,8 +157,21 @@ export default function Siswa() {
             )}
             {isTambahSiswa && (
                 <div className="absolute top-0 bottom-0 left-0 right-0 bg-[#000000be]">
-                    <FormSiswa setIsTambahSiswa={setIsTambahSiswa} />
+                    <FormSiswa
+                        setIsTambahSiswa={setIsTambahSiswa}
+                        setStatus={setStatus}
+                        setOverlayMessage={setOverlayMessage}
+                    />
                 </div>
+            )}
+
+            {overlayMessage && (
+                <OverlayMessage
+                    message={overlayMessage}
+                    status={status}
+                    setOverlayMessage={setOverlayMessage}
+                    setIsTambahSiswa={setIsTambahSiswa}
+                />
             )}
         </div>
     );

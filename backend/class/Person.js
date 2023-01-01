@@ -4,7 +4,7 @@ class Person {
         alamat,
         tempatLahir,
         tanggalLahir,
-        kelamin,
+        jenis_kelamin,
         nomor_telp
     ) {
         this.fullName = fullName;
@@ -12,7 +12,7 @@ class Person {
         this.tanggalLahir = tanggalLahir;
         this.tempatLahir = tempatLahir;
         this.nomor_telp = nomor_telp;
-        this.kelamin = kelamin;
+        this.jenis_kelamin = jenis_kelamin;
     }
 
     calcAge() {

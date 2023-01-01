@@ -10,18 +10,22 @@ import { Link, useLocation } from 'react-router-dom';
 
 import Pagination from '@mui/material/Pagination';
 import PaginationItem from '@mui/material/PaginationItem';
+import FormEdit from './FormEdit';
+import { getSPPByUUIDAction } from '../../../../actions/spp';
 
 const useQuery = () => {
     return new URLSearchParams(useLocation().search);
 };
 export default function SPP() {
+    const { type } = useSelector((state) => state.user);
+    const [isEdit, setIsEdit] = useState(false);
     const dispatch = useDispatch();
-    const { spp, currentPage, numberOfPages, startIndex } = useSelector(
-        (state) => state.spp
-    );
+    const { spp, currentPage, numberOfPages, startIndex, sppDetail } =
+        useSelector((state) => state.spp);
+
+    const user = useSelector((state) => state.user);
 
     const [isTambahSPP, setIsTambahSPP] = useState(false);
-    const [idSelectedEdit, setIdSelectedEdit] = useState('');
 
     const query = useQuery();
     const page = query.get('page') || 1;
@@ -30,15 +34,18 @@ export default function SPP() {
         dispatch(getSPP(page));
     }, [page]);
 
-    console.log(spp, currentPage, numberOfPages, startIndex);
+    useEffect(() => {
+        if (sppDetail?.uuid_spp) {
+            console.log(sppDetail);
+            setIsEdit(true);
+        }
+    }, [sppDetail]);
 
     const editHandler = (e) => {
         e.preventDefault();
-
-        // console.log(e.target.previousSibling.value);
-        setIdSelectedEdit(e.target.previousSibling.value);
+        const uuid_spp = e.target.previousSibling.value;
+        dispatch(getSPPByUUIDAction({ uuid_spp }));
     };
-    console.log(idSelectedEdit);
 
     return (
         <div className="bg-white  border-[3px] border-primary p-10 rounded-lg">
@@ -64,7 +71,9 @@ export default function SPP() {
                                     <th className="p-2">Tanggal Pembayaran</th>
                                     <th className="p-2">Jumlah Bulan</th>
                                     <th className="p-2">Jumlah Pembayaran</th>
-                                    <th className="p-2">Aksi</th>
+                                    {type === '1' && (
+                                        <th className="p-2">Aksi</th>
+                                    )}
                                 </tr>
                             </thead>
                             <tbody className="border-2 border-primary">
@@ -82,7 +91,6 @@ export default function SPP() {
                                             .split('')
                                             .reverse()
                                             .join('');
-
                                     return (
                                         <tr key={item.uuid_spp}>
                                             <td className="p-2 text-center">
@@ -100,19 +108,29 @@ export default function SPP() {
                                             <td className="p-2 text-center">
                                                 {rupiah}
                                             </td>
-                                            <td className="p-2 text-center">
-                                                <input
-                                                    type="hidden"
-                                                    name="uuid_spp"
-                                                    value={item.uuid_spp}
-                                                />
-                                                <button
-                                                    onClick={editHandler}
-                                                    className="bg-primary text-white rounded-md p-2"
-                                                >
-                                                    Edit
-                                                </button>
-                                            </td>
+                                            {type === '1' && (
+                                                <td className="p-2 text-center flex gap-2 justify-center">
+                                                    <input
+                                                        type="hidden"
+                                                        name="nik_anak"
+                                                        value={item?.uuid_spp}
+                                                    />
+                                                    {user?.type === '1' && (
+                                                        <button
+                                                            onClick={
+                                                                editHandler
+                                                            }
+                                                            className="bg-primary text-white font-medium p-2 rounded-md"
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                    )}
+
+                                                    {/* <button className="bg-red-500 text-white font-medium p-2 rounded-md">
+                                                        Hapus
+                                                    </button> */}
+                                                </td>
+                                            )}
                                         </tr>
                                     );
                                 })}
@@ -145,6 +163,12 @@ export default function SPP() {
             {isTambahSPP && (
                 <div className="absolute top-0 bottom-0 left-0 right-0 bg-[#000000be]">
                     <FormTambahSPP setIsTambahSPP={setIsTambahSPP} />
+                </div>
+            )}
+
+            {isEdit && (
+                <div className="absolute top-0 bottom-0 left-0 right-0 bg-[#000000be]">
+                    <FormEdit setIsEdit={setIsEdit} sppDetail={sppDetail} />
                 </div>
             )}
 

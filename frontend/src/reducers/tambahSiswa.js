@@ -66,6 +66,13 @@ const tambahSiswaSlice = createSlice({
         tambahDataOrangTua: (state, action) => {
             state.orang_tua = { ...state.orang_tua, ...action.payload };
         },
+        clearOrangTua: (state) => {
+            state.orang_tua = initialState.orang_tua;
+        },
+        clearSiswa: (state) => {
+            state.siswa = initialState.siswa;
+        },
+
         getDataSiswaBaru: (state, action) => {
             state.data = {
                 ...state.siswa,
@@ -76,6 +83,11 @@ const tambahSiswaSlice = createSlice({
     },
 });
 
-export const { tambahDataSiswa, tambahDataOrangTua, getDataSiswaBaru } =
-    tambahSiswaSlice.actions;
+export const {
+    tambahDataSiswa,
+    tambahDataOrangTua,
+    getDataSiswaBaru,
+    clearOrangTua,
+    clearSiswa,
+} = tambahSiswaSlice.actions;
 export default tambahSiswaSlice.reducer;

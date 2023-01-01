@@ -71,9 +71,24 @@ sequelize
                     .toISOString()
                     .substring(0, 10),
                 nomor_telp: '+62 813 83937583',
-                kelamin: 'laki-laki',
+                jenis_kelamin: 'laki-laki',
                 type: '0',
                 username: 'azurephoto',
+                password: hashPassword,
+                photo: 'https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/man-person-icon.png',
+            });
+
+            User.create({
+                fullName: 'Ucok',
+                alamat: 'Jln. Pahlawan, S',
+                tempatLahir: 'Pekanbaru',
+                tanggalLahir: new Date(2002, 04, 13)
+                    .toISOString()
+                    .substring(0, 10),
+                nomor_telp: '+62 813 3213689',
+                jenis_kelamin: 'laki-laki',
+                type: '1',
+                username: 'ucok',
                 password: hashPassword,
                 photo: 'https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/man-person-icon.png',
             });

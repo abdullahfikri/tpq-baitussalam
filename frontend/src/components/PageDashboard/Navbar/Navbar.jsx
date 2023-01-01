@@ -32,6 +32,9 @@ export default function Navbar({ user }) {
             </div>
 
             <div className="ml-10 flex items-center gap-3">
+                <p className="py-1 px-3 rounded-xl bg-primary text-white">
+                    {user?.type === '1' ? 'Kepsek' : 'TU'}
+                </p>
                 <p className="text-sm">{user.fullName}</p>
                 <img
                     src={user.photo}

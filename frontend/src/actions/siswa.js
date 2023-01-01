@@ -24,9 +24,22 @@ export const insertSiswa = (formData, kelas) => async (dispatch) => {
         dispatch(startLoading());
         const { data } = await API.insertSiswa(formData);
 
-        console.log(data, kelas);
+        await dispatch(insertSingleSiswa({ ...data.siswa, kela: kelas }));
+        dispatch(endLoading());
+        return { status: 'success', message: 'Data berhasil disimpan' };
+    } catch (error) {
+        return { status: 'error', message: error.response.data.message };
+        console.log(error);
+    }
+};
+
+export const updateSiswa = (formData) => async (dispatch) => {
+    try {
+        dispatch(startLoading());
+        const { data } = await API.updateSiswa(formData);
+        console.log(data);
         // dispatch(fetchSiswa(data));
-        dispatch(insertSingleSiswa({ ...data.siswa, kela: kelas }));
+        // dispatch(insertSingleSiswa({ ...data.siswa, kela: kelas }));
         dispatch(endLoading());
     } catch (error) {
         console.log(error);

@@ -21,14 +21,14 @@ const User = sequelize.define('user', {
         allowNull: false,
     },
     tanggalLahir: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
     },
     nomor_telp: {
         type: DataTypes.STRING(20),
         allowNull: false,
     },
-    kelamin: {
+    jenis_kelamin: {
         type: DataTypes.STRING(10),
         allowNull: false,
     },
@@ -46,7 +46,7 @@ const User = sequelize.define('user', {
         allowNull: false,
     },
     photo: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.TEXT,
         allowNull: true,
     },
 });

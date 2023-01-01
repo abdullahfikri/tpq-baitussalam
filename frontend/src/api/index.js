@@ -12,6 +12,9 @@ export const insertSiswa = (formData) =>
 export const fetchSiswaByNIK = (nik) => API.get(`/tpqmain/siswa/${nik}`);
 
 export const fetchAllSiswa = () => API.get('/tpqmain/allsiswa');
+export const updateSiswa = (formData) =>
+    API.post('/tpqmain/updatesiswa', formData);
+
 // /tpqmain/allsiswa
 
 // SPP
@@ -25,4 +28,15 @@ export const getSumSPPInAMonth = (startDate, endDate) =>
         `/tpqmain/spp/totalinmonth?startDate=${startDate}&endDate=${endDate}`
     );
 
+export const updateSPP = (formData) => API.post('/tpqmain/updatespp', formData);
+
 export const getLogsPerPage = (page) => API.get(`/tpqmain/logs?page=${page}`);
+
+// TU
+export const createTU = (formData) => API.post('/tpqmain/createtu', formData);
+export const updateTU = (formData) => API.post('/tpqmain/updatetu', formData);
+export const deleteTU = (id) => API.post('/tpqmain/deletetu', id);
+export const fetchTU = (page) => API.get(`/tpqmain/tu?page=${page}`);
+export const fetchTUById = (id) => API.post('/tpqmain/detailtu', id);
+
+export const getSPPByUUID = (uuid) => API.post('/tpqmain/getsppbyid', uuid);

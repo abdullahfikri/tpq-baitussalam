@@ -7,7 +7,7 @@ export default function SiswaItem({ name, value, no }) {
                 no === '0'
                     ? 'bg-primary text-gray-300 px-4 py-2 rounded-md'
                     : 'px-4'
-            }`}
+            } `}
         >
             <div className="w-[200px] mr-1 flex justify-between">
                 <p className="font-medium">{name}</p>

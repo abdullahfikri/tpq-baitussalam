@@ -44,7 +44,7 @@ class SPP {
 
             const logs = new Logs(
                 this.uuid_user,
-                `Insert siswa baru dengan nik ${dataSiswa.nik_anak} dan nama ${dataSiswa.nama_lengkap}`,
+                `Isert SPP untuk siswa dengan nik ${dataSiswa.nik_anak} dan nama ${dataSiswa.nama_lengkap}`,
                 new Date().toISOString()
             );
 
@@ -69,7 +69,7 @@ class SPP {
                 include: [
                     {
                         model: SiswaModel,
-                        attributes: ['nama_lengkap', 'uuid_siswa'],
+                        attributes: ['nama_lengkap', 'uuid_siswa', 'nik_anak'],
                     },
                 ],
                 order: [['createdAt', 'DESC']],
@@ -118,6 +118,52 @@ class SPP {
                 },
             });
             res.status(200).json({ totalSPP });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+    static async getSPPByUUID(req, res) {
+        try {
+            const { uuid_spp } = req.body;
+            console.log(uuid_spp);
+            const spp = await SPPModel.findOne({
+                where: {
+                    uuid_spp,
+                },
+                include: [
+                    {
+                        model: SiswaModel,
+                        attributes: [
+                            'nama_lengkap',
+                            'uuid_siswa',
+                            'bulan_spp_terakhir_dibayar',
+                        ],
+                    },
+                ],
+            });
+            res.status(200).json({ spp });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+    static async update(req, res) {
+        try {
+            const { uuid_spp, bulan_spp_terakhir_dibayar, uuid_siswa } =
+                req.body;
+            const spp = await SPPModel.update(req.body, {
+                where: {
+                    uuid_spp,
+                },
+            });
+
+            await SiswaModel.update(
+                {
+                    bulan_spp_terakhir_dibayar,
+                },
+                { where: { uuid_siswa } }
+            );
+
+            res.status(200).json({ spp });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }

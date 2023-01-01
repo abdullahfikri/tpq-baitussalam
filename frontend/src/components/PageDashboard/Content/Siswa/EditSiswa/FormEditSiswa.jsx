@@ -11,13 +11,15 @@ import ValidateDataSiswa from '../ValidateDataSiswa';
 import { tambahDataSiswa } from '../../../../../reducers/tambahSiswa';
 import { useDispatch } from 'react-redux';
 
-export default function FormEditSiswa({ siswaDetail, setSiswaEdited }) {
-    const [siswa, setSiswa] = useState(siswaDetail);
+export default function FormEditSiswa({
+    siswaEdited,
+    setSiswaEdited,
+    setIsTambahSiswa,
+    setIsEdit,
+}) {
+    const [siswa, setSiswa] = useState(siswaEdited);
     const dispatch = useDispatch();
-
-    useEffect(() => {
-        setSiswa(siswaDetail);
-    }, [siswaDetail]);
+    console.log(siswaEdited);
 
     const initialValues = {
         nama_lengkap: siswa?.nama_lengkap ? siswa.nama_lengkap : '',
@@ -32,13 +34,17 @@ export default function FormEditSiswa({ siswaDetail, setSiswaEdited }) {
         kecamatan: siswa?.kecamatan ? siswa.kecamatan : '',
         agama: siswa?.agama ? siswa.agama : '',
         anak_ke: siswa?.anak_ke ? siswa.anak_ke : '',
-        jumlah_saudara: siswa?.jumlah_saudara ? siswa.jumlah_saudara : '',
+        status: siswa?.status ? siswa.status : '',
+        jumlah_saudara:
+            siswa?.jumlah_saudara || siswa?.jumlah_saudara === 0
+                ? siswa.jumlah_saudara
+                : '',
         keterangan_yatim: siswa?.keterangan_yatim ? siswa.keterangan_yatim : '',
         golongan_darah: siswa?.golongan_darah ? siswa?.golongan_darah : '',
         photo: siswa?.photo ? siswa.photo : '',
     };
 
-    console.log(siswa);
+    // console.log(siswa);
     return (
         <Formik
             initialValues={initialValues}
@@ -49,8 +55,8 @@ export default function FormEditSiswa({ siswaDetail, setSiswaEdited }) {
                     const { payload: data } = await dispatch(
                         tambahDataSiswa(values)
                     );
-                    // setSiswaEdited((prev) => ({ ...prev, ...data }));
-                    // setIsTambahDataSiswa((prev) => !prev);
+                    setSiswaEdited((prev) => ({ ...prev, ...data }));
+                    setIsTambahSiswa((prev) => !prev);
                 } catch (error) {
                     console.log(error);
                 }
@@ -68,6 +74,12 @@ export default function FormEditSiswa({ siswaDetail, setSiswaEdited }) {
                         placeholder="Nama Lengkap"
                         type="text"
                         maxLength="50"
+                    />
+                    <InputSiswa
+                        name="status"
+                        placeholder="Status"
+                        type="text"
+                        maxLength="16"
                     />
 
                     <InputSiswa

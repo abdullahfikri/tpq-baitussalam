@@ -7,6 +7,7 @@ import SiswaDetail from './Siswa/DetailSiswa/SiswaDetail';
 import Logs from './Logs/Logs';
 import SPP from './SPP/SPP';
 import EditSiswa from './Siswa/EditSiswa/EditSiswa';
+import User from './Users/User';
 
 export default function Content({ user }) {
     return (
@@ -23,6 +24,7 @@ export default function Content({ user }) {
                     <Route path="/spp" element={<SPP />} />
                     <Route path="/" element={<SPP />} />
                     <Route path="/logs" element={<Logs />} />
+                    <Route path="/tu" element={<User />} />
                     <Route path="/siswa/edit/:nik" element={<EditSiswa />} />
                 </Routes>
             </div>

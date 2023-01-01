@@ -9,17 +9,23 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     tambahDataOrangTua,
     getDataSiswaBaru,
+    clearOrangTua,
+    clearSiswa,
 } from '../../../../reducers/tambahSiswa';
 
 import { insertSiswa } from '../../../../actions/siswa';
 
 import SelectKelas from './SelectKelas';
 import RadioKelas from './RadioKelas';
+import { endLoading } from '../../../../reducers/siswa';
 
 export default function FormDataOrtu({
+    setIsTambahSiswa,
     setIsTambahDataSiswa,
     setDataSiswa,
     dataSiswa,
+    setOverlayMessage,
+    setStatus,
 }) {
     const [isHavingWali, setIsHavingWali] = useState(false);
     const [dataKelas, setDataKelas] = useState([]);
@@ -70,16 +76,28 @@ export default function FormDataOrtu({
                 tanggal_masuk: new Date().toISOString().slice(0, 10),
                 uuid_user: user.uuid_user,
             };
-            console.log(dataLengkapSiswa);
             const kela = dataKelas.find((kelas) => {
                 return kelas.uuid_kelas === payload.uuid_kelas;
             });
 
-            dispatch(insertSiswa(dataLengkapSiswa, kela));
+            const response = await dispatch(
+                insertSiswa(dataLengkapSiswa, kela)
+            );
+            console.log(response);
+            if (response.status === 'error') {
+                throw new Error(response.message);
+            }
+            dispatch(endLoading());
+            setOverlayMessage('Data siswa berhasil ditambahkan');
+            setStatus('Berhasil');
 
-            // console.log(data);
+            dispatch(clearOrangTua());
+            dispatch(clearSiswa());
         } catch (error) {
             console.log(error);
+            setOverlayMessage(error.message);
+            setStatus('Gagal');
+            dispatch(endLoading());
         }
     };
 
