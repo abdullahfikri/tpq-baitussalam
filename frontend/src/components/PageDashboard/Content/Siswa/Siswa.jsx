@@ -76,7 +76,9 @@ export default function Siswa() {
                                 </th>
                                 <th className="text-left">Kelas</th>
                                 <th className="text-left">Status</th>
-                                <th className="text-left">Aksi</th>
+                                {user?.type === '0' && (
+                                    <th className="text-left">Aksi</th>
+                                )}
                             </tr>
                         </thead>
                         <tbody>
